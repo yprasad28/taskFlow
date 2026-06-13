@@ -12,18 +12,27 @@ import {
   LogOut,
   Plus,
   Star,
+  Shield,
+  Users,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/Button";
 
-const navItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+const userNavItems = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/tasks", label: "All Tasks", icon: CheckSquare },
   { href: "/tasks?view=today", label: "Today", icon: Clock },
   { href: "/tasks?status=PENDING", label: "Upcoming", icon: Calendar },
   { href: "/tasks?status=COMPLETED", label: "Completed", icon: CheckSquare },
   { href: "/tasks?priority=HIGH", label: "High Priority", icon: AlertCircle },
+];
+
+const adminNavItems = [
+  { href: "/admin/dashboard", label: "Admin Dashboard", icon: Shield },
+  { href: "/admin/tasks", label: "Task Oversight", icon: BarChart3 },
+  { href: "/admin/team", label: "Team Management", icon: Users },
 ];
 
 const projects = [
@@ -34,7 +43,9 @@ const projects = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
+
+  const navItems = isAdmin ? adminNavItems : userNavItems;
 
   return (
     <aside className="hidden w-64 flex-col border-r border-border bg-card lg:flex">
@@ -43,13 +54,18 @@ export function Sidebar() {
           <CheckSquare className="h-4 w-4 text-primary-foreground" />
         </div>
         <span className="text-lg font-bold">TaskFlow</span>
+        {isAdmin && (
+          <span className="ml-auto rounded bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+            Admin
+          </span>
+        )}
       </div>
 
       <nav className="flex-1 space-y-1 p-4">
         {navItems.map((item) => {
           const isActive =
-            item.href === "/"
-              ? pathname === "/"
+            item.href === "/dashboard" || item.href === "/admin/dashboard"
+              ? pathname === item.href
               : pathname.startsWith(item.href.split("?")[0]);
           return (
             <Link
@@ -68,40 +84,44 @@ export function Sidebar() {
           );
         })}
 
-        <div className="mt-6">
-          <div className="mb-2 flex items-center justify-between px-3">
-            <span className="text-xs font-semibold uppercase text-muted-foreground">
-              Projects
-            </span>
-            <button className="rounded p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
-              <Plus className="h-3 w-3" />
-            </button>
+        {!isAdmin && (
+          <div className="mt-6">
+            <div className="mb-2 flex items-center justify-between px-3">
+              <span className="text-xs font-semibold uppercase text-muted-foreground">
+                Projects
+              </span>
+              <button className="rounded p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+                <Plus className="h-3 w-3" />
+              </button>
+            </div>
+            {projects.map((project) => (
+              <button
+                key={project.name}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              >
+                <div className={cn("h-2 w-2 rounded-full", project.color)} />
+                {project.name}
+              </button>
+            ))}
           </div>
-          {projects.map((project) => (
-            <button
-              key={project.name}
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-            >
-              <div className={cn("h-2 w-2 rounded-full", project.color)} />
-              {project.name}
-            </button>
-          ))}
-        </div>
+        )}
       </nav>
 
       <div className="border-t border-border p-4">
-        <div className="mb-3 rounded-lg bg-accent p-3">
-          <div className="mb-1 flex items-center gap-2 text-sm font-medium">
-            <Star className="h-4 w-4 text-yellow-500" />
-            Upgrade to Pro
+        {!isAdmin && (
+          <div className="mb-3 rounded-lg bg-accent p-3">
+            <div className="mb-1 flex items-center gap-2 text-sm font-medium">
+              <Star className="h-4 w-4 text-yellow-500" />
+              Upgrade to Pro
+            </div>
+            <p className="mb-2 text-xs text-muted-foreground">
+              Unlock advanced features
+            </p>
+            <Button size="sm" className="w-full">
+              Upgrade Now
+            </Button>
           </div>
-          <p className="mb-2 text-xs text-muted-foreground">
-            Unlock advanced features
-          </p>
-          <Button size="sm" className="w-full">
-            Upgrade Now
-          </Button>
-        </div>
+        )}
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

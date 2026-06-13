@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import api, { setAccessToken } from "@/lib/api";
 import { User, AuthData } from "@/types/user";
+import { Role } from "@/types/roles";
 import { ApiResponse } from "@/types/api";
 import { LoginInput, RegisterInput } from "@/validations/auth";
 import { toast } from "sonner";
@@ -36,6 +37,10 @@ export function useAuth() {
     fetchUser();
   }, [fetchUser]);
 
+  const getRedirectPath = (role: Role): string => {
+    return role === "ADMIN" ? "/admin/dashboard" : "/dashboard";
+  };
+
   const login = async (input: LoginInput) => {
     try {
       const { data } = await api.post<ApiResponse<AuthData>>("/auth/login", input);
@@ -47,7 +52,7 @@ export function useAuth() {
       setUser(user);
 
       toast.success("Welcome back!");
-      router.push("/");
+      router.push(getRedirectPath(user.role));
     } catch (error: unknown) {
       const apiError = error as { response?: { data?: { error?: { message?: string } } } };
       const message = apiError.response?.data?.error?.message || "Login failed";
@@ -67,7 +72,7 @@ export function useAuth() {
       setUser(user);
 
       toast.success("Account created successfully!");
-      router.push("/");
+      router.push(getRedirectPath(user.role));
     } catch (error: unknown) {
       const apiError = error as { response?: { data?: { error?: { message?: string } } } };
       const message = apiError.response?.data?.error?.message || "Registration failed";
@@ -88,6 +93,7 @@ export function useAuth() {
     user,
     isLoading,
     isAuthenticated: !!user,
+    isAdmin: user?.role === "ADMIN",
     login,
     register,
     logout,

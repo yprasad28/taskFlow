@@ -7,6 +7,7 @@ import { rateLimiter } from "./middleware/rateLimiter";
 import { errorHandler } from "./middleware/errorHandler";
 import authRoutes from "./modules/auth/auth.routes";
 import taskRoutes from "./modules/tasks/task.routes";
+import adminRoutes from "./modules/admin/admin.routes";
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.get("/health", (_req, res) => {
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/tasks", taskRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 app.use(errorHandler);
 
