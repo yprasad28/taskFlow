@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { Sidebar } from "@/components/layout/Sidebar";
-import { Header } from "@/components/layout/Header";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 export default function AdminLayout({
@@ -33,26 +32,29 @@ export default function AdminLayout({
   if (!mounted || isLoading) {
     return (
       <div className="flex h-screen">
-        <aside className="hidden w-64 border-r bg-card lg:block">
+        <aside className="hidden w-64 bg-[#0b1c30] lg:block">
           <div className="flex h-full flex-col">
-            <div className="flex h-16 items-center border-b px-6">
-              <Skeleton className="h-6 w-20" />
+            <div className="flex h-16 items-center border-b border-white/10 px-6">
+              <Skeleton className="h-6 w-20 bg-white/10" />
             </div>
             <div className="flex-1 space-y-2 p-4">
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full bg-white/10" />
+              <Skeleton className="h-10 w-full bg-white/10" />
+              <Skeleton className="h-10 w-full bg-white/10" />
             </div>
           </div>
         </aside>
         <div className="flex flex-1 flex-col">
-          <div className="flex h-16 items-center justify-between border-b bg-card px-6">
-            <Skeleton className="h-6 w-40" />
-            <Skeleton className="h-8 w-8" />
+          <div className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6">
+            <Skeleton className="h-10 w-72" />
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-10 w-40" />
+              <Skeleton className="h-9 w-9 rounded-full" />
+            </div>
           </div>
           <main className="flex-1 p-6">
             <Skeleton className="h-8 w-48 mb-6" />
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Skeleton className="h-28" />
+            <div className="grid gap-4 md:grid-cols-3 mb-6">
               <Skeleton className="h-28" />
               <Skeleton className="h-28" />
               <Skeleton className="h-28" />
@@ -68,11 +70,10 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-gray-50">
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
-        <Header />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto">{children}</main>
       </div>
     </div>
   );
