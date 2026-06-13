@@ -1,4 +1,4 @@
-import { Prisma, TaskStatus, TaskPriority } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../config/prisma";
 import { ApiError } from "../../utils/apiError";
 import { CreateTaskInput, UpdateTaskInput, TaskQueryInput } from "./task.schema";
@@ -26,16 +26,16 @@ export async function getTasks(
   userId: string,
   query: TaskQueryInput
 ): Promise<PaginatedTasksResponse> {
-  const { page, limit, status, search, sortBy, sortOrder } = query;
+  const { page, limit, status, priority, search, sortBy, sortOrder } = query;
   const skip = (page - 1) * limit;
 
   const where: Prisma.TaskWhereInput = {
     userId,
     ...(status && { status }),
+    ...(priority && { priority }),
     ...(search && {
       title: {
         contains: search,
-        mode: "insensitive",
       },
     }),
   };
@@ -154,8 +154,8 @@ function formatTask(task: {
   id: string;
   title: string;
   description: string | null;
-  status: TaskStatus;
-  priority: TaskPriority;
+  status: string;
+  priority: string;
   dueDate: Date | null;
   userId: string;
   createdAt: Date;
@@ -165,8 +165,8 @@ function formatTask(task: {
     id: task.id,
     title: task.title,
     description: task.description,
-    status: task.status,
-    priority: task.priority,
+    status: task.status as TaskResponse["status"],
+    priority: task.priority as TaskResponse["priority"],
     dueDate: task.dueDate,
     userId: task.userId,
     createdAt: task.createdAt,

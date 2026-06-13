@@ -44,6 +44,7 @@ export const taskQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(50).default(10),
   status: taskStatusEnum.optional(),
+  priority: taskPriorityEnum.optional(),
   search: z.string().max(255).optional(),
   sortBy: z
     .enum(["createdAt", "dueDate", "priority", "title"])

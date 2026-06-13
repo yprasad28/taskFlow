@@ -20,6 +20,7 @@ export function useTasks(filters: TaskFilters) {
   if (filters.page) params.set("page", String(filters.page));
   if (filters.limit) params.set("limit", String(filters.limit));
   if (filters.status) params.set("status", filters.status);
+  if (filters.priority) params.set("priority", filters.priority);
   if (filters.search) params.set("search", filters.search);
   if (filters.sortBy) params.set("sortBy", filters.sortBy);
   if (filters.sortOrder) params.set("sortOrder", filters.sortOrder);

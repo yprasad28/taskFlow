@@ -24,6 +24,7 @@ export interface TaskFilters {
   page?: number;
   limit?: number;
   status?: TaskStatus;
+  priority?: TaskPriority;
   search?: string;
   sortBy?: "createdAt" | "dueDate" | "priority" | "title";
   sortOrder?: "asc" | "desc";

@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
-import { TaskFilters, TaskStatus } from "@/types/task";
+import { TaskFilters, TaskStatus, TaskPriority } from "@/types/task";
 
 export function useTaskFilters() {
   const router = useRouter();
@@ -13,6 +13,7 @@ export function useTaskFilters() {
       page: Number(searchParams.get("page")) || 1,
       limit: Number(searchParams.get("limit")) || 10,
       status: (searchParams.get("status") as TaskStatus) || undefined,
+      priority: (searchParams.get("priority") as TaskPriority) || undefined,
       search: searchParams.get("search") || undefined,
       sortBy: (searchParams.get("sortBy") as TaskFilters["sortBy"]) || "createdAt",
       sortOrder: (searchParams.get("sortOrder") as TaskFilters["sortOrder"]) || "desc",
