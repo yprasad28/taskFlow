@@ -23,7 +23,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     }
   }, [mounted, isLoading, isAuthenticated, router]);
 
-  if (!mounted || isLoading || !isAuthenticated) {
+  if (!mounted || isLoading) {
     return (
       <div className="flex h-screen">
         <aside className="hidden w-64 border-r bg-card lg:block">
@@ -54,6 +54,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     );
+  }
+
+  if (!isAuthenticated) {
+    return null;
   }
 
   return (

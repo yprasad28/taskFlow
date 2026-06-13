@@ -30,7 +30,7 @@ export default function AdminLayout({
     }
   }, [mounted, isLoading, isAuthenticated, isAdmin, router]);
 
-  if (!mounted || isLoading || !isAuthenticated || !isAdmin) {
+  if (!mounted || isLoading) {
     return (
       <div className="flex h-screen">
         <aside className="hidden w-64 border-r bg-card lg:block">
@@ -61,6 +61,10 @@ export default function AdminLayout({
         </div>
       </div>
     );
+  }
+
+  if (!isAuthenticated || !isAdmin) {
+    return null;
   }
 
   return (

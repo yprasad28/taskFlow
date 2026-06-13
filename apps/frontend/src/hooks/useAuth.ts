@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import api, { setAccessToken } from "@/lib/api";
 import { User, AuthData } from "@/types/user";
@@ -13,6 +13,7 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const hasCheckedAuth = useRef(false);
 
   const fetchUser = useCallback(async () => {
     try {
@@ -25,9 +26,14 @@ export function useAuth() {
       setAccessToken(token);
       const { data } = await api.get("/auth/me");
       setUser(data.data.user);
-    } catch {
-      localStorage.removeItem("accessToken");
-      setAccessToken(null);
+      hasCheckedAuth.current = true;
+    } catch (error: unknown) {
+      const statusCode = (error as { response?: { status?: number } })?.response?.status;
+      if (statusCode === 401) {
+        localStorage.removeItem("accessToken");
+        setAccessToken(null);
+        setUser(null);
+      }
     } finally {
       setIsLoading(false);
     }
