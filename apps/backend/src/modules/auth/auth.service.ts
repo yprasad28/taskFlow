@@ -8,6 +8,7 @@ import {
 import { ApiError } from "../../utils/apiError";
 import { RegisterInput, LoginInput } from "./auth.schema";
 import { AuthResponse, TokenResponse, UserResponse } from "./auth.types";
+import { Role } from "../../types/roles";
 
 export async function register(data: RegisterInput): Promise<AuthResponse> {
   const existingUser = await prisma.user.findUnique({
@@ -25,10 +26,12 @@ export async function register(data: RegisterInput): Promise<AuthResponse> {
       name: data.name,
       email: data.email,
       passwordHash,
+      role: data.role,
     },
   });
 
-  const tokenPayload = { userId: user.id, email: user.email };
+  const role = user.role as Role;
+  const tokenPayload = { userId: user.id, email: user.email, role };
   const token = generateAccessToken(tokenPayload);
   const refreshToken = generateRefreshToken(tokenPayload);
 
@@ -54,7 +57,8 @@ export async function login(data: LoginInput): Promise<AuthResponse> {
     throw ApiError.unauthorized("Invalid email or password");
   }
 
-  const tokenPayload = { userId: user.id, email: user.email };
+  const role = user.role as Role;
+  const tokenPayload = { userId: user.id, email: user.email, role };
   const token = generateAccessToken(tokenPayload);
   const refreshToken = generateRefreshToken(tokenPayload);
 
@@ -80,6 +84,7 @@ export async function refreshToken(refreshTokenStr: string): Promise<TokenRespon
     const token = generateAccessToken({
       userId: user.id,
       email: user.email,
+      role: user.role as Role,
     });
 
     return { token };
@@ -101,11 +106,12 @@ export async function getCurrentUser(userId: string): Promise<UserResponse> {
   return formatUser(user);
 }
 
-function formatUser(user: { id: string; name: string; email: string; createdAt: Date }): UserResponse {
+function formatUser(user: { id: string; name: string; email: string; role: string; createdAt: Date }): UserResponse {
   return {
     id: user.id,
     name: user.name,
     email: user.email,
+    role: user.role as Role,
     createdAt: user.createdAt,
   };
 }

@@ -1,29 +1,59 @@
 import { PrismaClient } from "@prisma/client";
 import { hashPassword } from "../src/utils/password";
+import { ROLES } from "../src/types/roles";
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log("Seeding database...");
 
-  const existingUser = await prisma.user.findUnique({
+  const passwordHash = await hashPassword("password123");
+
+  const existingDemo = await prisma.user.findUnique({
     where: { email: "demo@taskflow.com" },
   });
 
-  if (existingUser) {
-    console.log("Demo user already exists, skipping seed.");
-    return;
+  let demoUser;
+  if (existingDemo) {
+    console.log("Demo user already exists, skipping.");
+    demoUser = existingDemo;
+  } else {
+    demoUser = await prisma.user.create({
+      data: {
+        name: "Demo User",
+        email: "demo@taskflow.com",
+        passwordHash,
+        role: ROLES.USER,
+      },
+    });
+    console.log(`Created demo user: ${demoUser.email}`);
   }
 
-  const passwordHash = await hashPassword("password123");
-
-  const user = await prisma.user.create({
-    data: {
-      name: "Demo User",
-      email: "demo@taskflow.com",
-      passwordHash,
-    },
+  const existingAdmin = await prisma.user.findUnique({
+    where: { email: "admin@taskflow.com" },
   });
+
+  let adminUser;
+  if (existingAdmin) {
+    console.log("Admin user already exists, skipping.");
+    adminUser = existingAdmin;
+  } else {
+    adminUser = await prisma.user.create({
+      data: {
+        name: "Admin User",
+        email: "admin@taskflow.com",
+        passwordHash,
+        role: ROLES.ADMIN,
+      },
+    });
+    console.log(`Created admin user: ${adminUser.email}`);
+  }
+
+  const existingTasks = await prisma.task.count();
+  if (existingTasks > 0) {
+    console.log("Tasks already exist, skipping seed.");
+    return;
+  }
 
   const tasks = [
     {
@@ -32,7 +62,7 @@ async function main() {
       status: "COMPLETED" as const,
       priority: "HIGH" as const,
       dueDate: new Date("2026-06-10"),
-      userId: user.id,
+      userId: demoUser.id,
     },
     {
       title: "Design database schema",
@@ -40,7 +70,7 @@ async function main() {
       status: "COMPLETED" as const,
       priority: "HIGH" as const,
       dueDate: new Date("2026-06-11"),
-      userId: user.id,
+      userId: demoUser.id,
     },
     {
       title: "Implement authentication",
@@ -48,7 +78,7 @@ async function main() {
       status: "IN_PROGRESS" as const,
       priority: "URGENT" as const,
       dueDate: new Date("2026-06-12"),
-      userId: user.id,
+      userId: demoUser.id,
     },
     {
       title: "Build task CRUD API",
@@ -56,7 +86,7 @@ async function main() {
       status: "IN_PROGRESS" as const,
       priority: "HIGH" as const,
       dueDate: new Date("2026-06-12"),
-      userId: user.id,
+      userId: demoUser.id,
     },
     {
       title: "Write API tests",
@@ -64,7 +94,7 @@ async function main() {
       status: "PENDING" as const,
       priority: "MEDIUM" as const,
       dueDate: new Date("2026-06-13"),
-      userId: user.id,
+      userId: demoUser.id,
     },
     {
       title: "Deploy to production",
@@ -72,7 +102,7 @@ async function main() {
       status: "PENDING" as const,
       priority: "LOW" as const,
       dueDate: new Date("2026-06-15"),
-      userId: user.id,
+      userId: demoUser.id,
     },
     {
       title: "Update documentation",
@@ -80,7 +110,7 @@ async function main() {
       status: "PENDING" as const,
       priority: "MEDIUM" as const,
       dueDate: null,
-      userId: user.id,
+      userId: demoUser.id,
     },
     {
       title: "Code review preparation",
@@ -88,13 +118,14 @@ async function main() {
       status: "PENDING" as const,
       priority: "URGENT" as const,
       dueDate: new Date("2026-06-14"),
-      userId: user.id,
+      userId: demoUser.id,
     },
   ];
 
   await prisma.task.createMany({ data: tasks });
 
-  console.log(`Seeded ${tasks.length} tasks for user: ${user.email}`);
+  console.log(`Seeded ${tasks.length} tasks for user: ${demoUser.email}`);
+  console.log(`Admin user ready: ${adminUser.email} / password123`);
 }
 
 main()
