@@ -3,7 +3,7 @@ export const ITEMS_PER_PAGE = 8;
 export const STATUS_COLORS: Record<string, string> = {
   PENDING: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
   IN_PROGRESS: "bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400",
-  IN_REVIEW: "bg-green-100 text-green-600 dark:bg-green-500/10 dark:text-green-400",
+  IN_REVIEW: "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400",
   COMPLETED: "bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400",
 };
 
@@ -15,7 +15,7 @@ export const PRIORITY_COLORS: Record<string, string> = {
 };
 
 export const STATUS_LABELS: Record<string, string> = {
-  PENDING: "Pending",
+  PENDING: "To Do",
   IN_PROGRESS: "In Progress",
   IN_REVIEW: "In Review",
   COMPLETED: "Completed",

@@ -19,6 +19,11 @@ router.get(
 );
 
 router.get(
+  "/activity",
+  taskController.getUserActivity
+);
+
+router.get(
   "/",
   validate(taskQuerySchema, "query"),
   taskController.getTasks

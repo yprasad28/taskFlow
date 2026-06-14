@@ -9,7 +9,7 @@ export const createTaskSchema = z.object({
     .string()
     .max(5000, "Description must be less than 5000 characters")
     .optional(),
-  status: z.enum(["PENDING", "IN_PROGRESS", "COMPLETED"]),
+  status: z.enum(["PENDING", "IN_PROGRESS", "IN_REVIEW", "COMPLETED"]),
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]),
   dueDate: z.string().optional(),
 });
@@ -24,7 +24,7 @@ export const updateTaskSchema = z.object({
     .string()
     .max(5000, "Description must be less than 5000 characters")
     .optional(),
-  status: z.enum(["PENDING", "IN_PROGRESS", "COMPLETED"]).optional(),
+  status: z.enum(["PENDING", "IN_PROGRESS", "IN_REVIEW", "COMPLETED"]).optional(),
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).optional(),
   dueDate: z.string().optional(),
 });

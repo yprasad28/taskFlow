@@ -2,7 +2,7 @@ export interface TaskResponse {
   id: string;
   title: string;
   description: string | null;
-  status: "PENDING" | "IN_PROGRESS" | "COMPLETED";
+  status: "PENDING" | "IN_PROGRESS" | "IN_REVIEW" | "COMPLETED";
   priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
   dueDate: Date | null;
   userId: string;
@@ -26,5 +26,6 @@ export interface TaskKPIsResponse {
   total: number;
   pending: number;
   inProgress: number;
+  inReview: number;
   completed: number;
 }

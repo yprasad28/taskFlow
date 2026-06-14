@@ -33,6 +33,7 @@ export function EditTaskModal({ isOpen, onClose, task }: EditTaskModalProps) {
           <TaskForm
             task={task}
             onSubmit={handleSubmit}
+            onCancel={onClose}
             isLoading={updateTask.isPending}
           />
         )}

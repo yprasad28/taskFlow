@@ -4,6 +4,9 @@ import { ApiError } from "../../utils/apiError";
 import { CreateTaskInput, UpdateTaskInput, TaskQueryInput } from "./task.schema";
 import { TaskResponse, PaginatedTasksResponse, TaskKPIsResponse } from "./task.types";
 import { logActivity } from "../admin/activity-log.service";
+import { getUserName } from "../../utils/user";
+import { STATUS_LABELS } from "../../utils/labels";
+import { buildPagination } from "../../utils/pagination";
 
 export async function createTask(
   userId: string,
@@ -20,12 +23,13 @@ export async function createTask(
     },
   });
 
+  const userName = await getUserName(userId);
   await logActivity({
     action: "created",
     entity: "task",
     entityId: task.id,
     userId,
-    details: `Created task "${task.title}"`,
+    details: `${userName} created task "${task.title}"`,
   });
 
   return formatTask(task);
@@ -63,18 +67,9 @@ export async function getTasks(
     prisma.task.count({ where }),
   ]);
 
-  const totalPages = Math.ceil(total / limit);
-
   return {
     items: tasks.map(formatTask),
-    pagination: {
-      page,
-      limit,
-      total,
-      totalPages,
-      hasNext: page < totalPages,
-      hasPrev: page > 1,
-    },
+    pagination: buildPagination(page, limit, total),
   };
 }
 
@@ -127,7 +122,7 @@ export async function updateTask(
 
   const changes: string[] = [];
   if (data.status && data.status !== existingTask.status) {
-    changes.push(`status from ${existingTask.status} to ${data.status}`);
+    changes.push(`status from ${STATUS_LABELS[existingTask.status] || existingTask.status} to ${STATUS_LABELS[data.status] || data.status}`);
   }
   if (data.priority && data.priority !== existingTask.priority) {
     changes.push(`priority from ${existingTask.priority} to ${data.priority}`);
@@ -136,14 +131,15 @@ export async function updateTask(
     changes.push(`title to "${data.title}"`);
   }
 
+  const userName = await getUserName(userId);
   await logActivity({
     action: "updated",
     entity: "task",
     entityId: taskId,
     userId,
     details: changes.length > 0
-      ? `Updated task "${existingTask.title}": ${changes.join(", ")}`
-      : `Updated task "${existingTask.title}"`,
+      ? `${userName} updated task "${existingTask.title}": ${changes.join(", ")}`
+      : `${userName} updated task "${existingTask.title}"`,
   });
 
   return formatTask(task);
@@ -168,24 +164,26 @@ export async function deleteTask(
     where: { id: taskId },
   });
 
+  const userName = await getUserName(userId);
   await logActivity({
     action: "deleted",
     entity: "task",
     entityId: taskId,
     userId,
-    details: `Deleted task "${existingTask.title}"`,
+    details: `${userName} deleted task "${existingTask.title}"`,
   });
 }
 
 export async function getTaskKPIs(userId: string): Promise<TaskKPIsResponse> {
-  const [total, pending, inProgress, completed] = await Promise.all([
+  const [total, pending, inProgress, inReview, completed] = await Promise.all([
     prisma.task.count({ where: { userId } }),
     prisma.task.count({ where: { userId, status: "PENDING" } }),
     prisma.task.count({ where: { userId, status: "IN_PROGRESS" } }),
+    prisma.task.count({ where: { userId, status: "IN_REVIEW" } }),
     prisma.task.count({ where: { userId, status: "COMPLETED" } }),
   ]);
 
-  return { total, pending, inProgress, completed };
+  return { total, pending, inProgress, inReview, completed };
 }
 
 function formatTask(task: {
@@ -210,4 +208,43 @@ function formatTask(task: {
     createdAt: task.createdAt,
     updatedAt: task.updatedAt,
   };
+}
+
+export async function getUserActivityLogs(userId: string, limit = 10) {
+  const logs = await prisma.activityLog.findMany({
+    where: {
+      OR: [
+        { userId },
+        {
+          AND: [
+            { entity: "task" },
+            {
+              task: { userId },
+            },
+          ],
+        },
+      ],
+    },
+    include: {
+      user: {
+        select: { id: true, name: true, email: true, role: true },
+      },
+      task: {
+        select: { id: true, title: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+
+  return logs.map((log) => ({
+    id: log.id,
+    action: log.action,
+    entity: log.entity,
+    entityId: log.entityId,
+    details: log.details,
+    taskTitle: log.task?.title || null,
+    createdAt: log.createdAt,
+    user: log.user,
+  }));
 }

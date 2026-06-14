@@ -27,6 +27,7 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
       <div className="mt-4">
         <TaskForm
           onSubmit={handleSubmit}
+          onCancel={onClose}
           isLoading={createTask.isPending}
         />
       </div>

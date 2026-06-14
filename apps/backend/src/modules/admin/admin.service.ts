@@ -10,6 +10,9 @@ import {
 } from "./admin.types";
 import { AdminUserQueryInput, AdminTaskQueryInput, AdminUpdateTaskInput } from "./admin.schema";
 import { logActivity } from "./activity-log.service";
+import { getUserName } from "../../utils/user";
+import { STATUS_LABELS } from "../../utils/labels";
+import { buildPagination } from "../../utils/pagination";
 
 export async function getStats(): Promise<AdminStatsResponse> {
   const now = new Date();
@@ -95,8 +98,6 @@ export async function getUsers(
     prisma.user.count({ where }),
   ]);
 
-  const totalPages = Math.ceil(total / limit);
-
   return {
     items: users.map((user) => {
       const completedTasks = user.tasks.filter((t) => t.status === "COMPLETED").length;
@@ -110,14 +111,7 @@ export async function getUsers(
         completedTasks,
       };
     }),
-    pagination: {
-      page,
-      limit,
-      total,
-      totalPages,
-      hasNext: page < totalPages,
-      hasPrev: page > 1,
-    },
+    pagination: buildPagination(page, limit, total),
   };
 }
 
@@ -156,8 +150,6 @@ export async function getTasks(
     prisma.task.count({ where }),
   ]);
 
-  const totalPages = Math.ceil(total / limit);
-
   return {
     items: tasks.map((task) => ({
       id: task.id,
@@ -169,14 +161,7 @@ export async function getTasks(
       createdAt: task.createdAt,
       user: task.user,
     })),
-    pagination: {
-      page,
-      limit,
-      total,
-      totalPages,
-      hasNext: page < totalPages,
-      hasPrev: page > 1,
-    },
+    pagination: buildPagination(page, limit, total),
   };
 }
 
@@ -213,7 +198,7 @@ export async function updateTask(
 
   const changes: string[] = [];
   if (data.status && data.status !== existingTask.status) {
-    changes.push(`status from ${existingTask.status} to ${data.status}`);
+    changes.push(`status from ${STATUS_LABELS[existingTask.status] || existingTask.status} to ${STATUS_LABELS[data.status] || data.status}`);
   }
   if (data.priority && data.priority !== existingTask.priority) {
     changes.push(`priority from ${existingTask.priority} to ${data.priority}`);
@@ -225,15 +210,38 @@ export async function updateTask(
     changes.push(`assignee to ${task.user.name}`);
   }
 
+  const adminName = await getUserName(adminId);
   await logActivity({
     action: "updated",
     entity: "task",
     entityId: taskId,
     userId: adminId,
     details: changes.length > 0
-      ? `Admin updated task "${existingTask.title}": ${changes.join(", ")}`
-      : `Admin updated task "${existingTask.title}"`,
+      ? `${adminName} updated task "${existingTask.title}": ${changes.join(", ")}`
+      : `${adminName} updated task "${existingTask.title}"`,
   });
+
+  // If task was reassigned, also log activity for the new user
+  if (data.userId && data.userId !== existingTask.userId) {
+    await logActivity({
+      action: "assigned",
+      entity: "task",
+      entityId: taskId,
+      userId: data.userId,
+      details: `${adminName} assigned task "${existingTask.title}" to you`,
+    });
+  }
+
+  // If task status changed, log for the task owner
+  if (data.status && data.status !== existingTask.status) {
+    await logActivity({
+      action: "status_changed",
+      entity: "task",
+      entityId: taskId,
+      userId: existingTask.userId,
+      details: `${adminName} changed task "${existingTask.title}" status to ${STATUS_LABELS[data.status] || data.status}`,
+    });
+  }
 
   return {
     id: task.id,
@@ -263,11 +271,12 @@ export async function deleteTask(
     where: { id: taskId },
   });
 
+  const adminName = await getUserName(adminId);
   await logActivity({
     action: "deleted",
     entity: "task",
     entityId: taskId,
     userId: adminId,
-    details: `Admin deleted task "${existingTask.title}"`,
+    details: `${adminName} deleted task "${existingTask.title}"`,
   });
 }

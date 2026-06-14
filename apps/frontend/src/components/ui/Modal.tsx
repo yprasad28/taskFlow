@@ -25,7 +25,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
             <X className="h-5 w-5" />
           </button>
         </div>
-        {children}
+        <div className="px-6 py-4">{children}</div>
       </div>
     </div>
   );
