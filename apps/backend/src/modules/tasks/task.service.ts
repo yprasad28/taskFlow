@@ -3,6 +3,7 @@ import { prisma } from "../../config/prisma";
 import { ApiError } from "../../utils/apiError";
 import { CreateTaskInput, UpdateTaskInput, TaskQueryInput } from "./task.schema";
 import { TaskResponse, PaginatedTasksResponse, TaskKPIsResponse } from "./task.types";
+import { logActivity } from "../admin/activity-log.service";
 
 export async function createTask(
   userId: string,
@@ -17,6 +18,14 @@ export async function createTask(
       dueDate: data.dueDate ? new Date(data.dueDate) : null,
       userId,
     },
+  });
+
+  await logActivity({
+    action: "created",
+    entity: "task",
+    entityId: task.id,
+    userId,
+    details: `Created task "${task.title}"`,
   });
 
   return formatTask(task);
@@ -116,6 +125,27 @@ export async function updateTask(
     },
   });
 
+  const changes: string[] = [];
+  if (data.status && data.status !== existingTask.status) {
+    changes.push(`status from ${existingTask.status} to ${data.status}`);
+  }
+  if (data.priority && data.priority !== existingTask.priority) {
+    changes.push(`priority from ${existingTask.priority} to ${data.priority}`);
+  }
+  if (data.title && data.title !== existingTask.title) {
+    changes.push(`title to "${data.title}"`);
+  }
+
+  await logActivity({
+    action: "updated",
+    entity: "task",
+    entityId: taskId,
+    userId,
+    details: changes.length > 0
+      ? `Updated task "${existingTask.title}": ${changes.join(", ")}`
+      : `Updated task "${existingTask.title}"`,
+  });
+
   return formatTask(task);
 }
 
@@ -136,6 +166,14 @@ export async function deleteTask(
 
   await prisma.task.delete({
     where: { id: taskId },
+  });
+
+  await logActivity({
+    action: "deleted",
+    entity: "task",
+    entityId: taskId,
+    userId,
+    details: `Deleted task "${existingTask.title}"`,
   });
 }
 

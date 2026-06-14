@@ -1,26 +1,38 @@
 import { cn } from "@/lib/utils";
+import { STATUS_COLORS, PRIORITY_COLORS, STATUS_LABELS, PRIORITY_LABELS } from "@/lib/constants";
 
 interface BadgeProps {
-  children: React.ReactNode;
+  value?: string;
+  type?: "status" | "priority";
+  variant?: string;
   className?: string;
-  variant?: "default" | "secondary" | "destructive" | "outline";
+  children?: React.ReactNode;
 }
 
-export function Badge({ children, className, variant = "default" }: BadgeProps) {
+export function Badge({ value, type, variant, className, children }: BadgeProps) {
+  if (value && type) {
+    const colors = type === "status" ? STATUS_COLORS : PRIORITY_COLORS;
+    const labels = type === "status" ? STATUS_LABELS : PRIORITY_LABELS;
+    return (
+      <span
+        className={cn(
+          "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold",
+          colors[value] || "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
+          className
+        )}
+      >
+        {labels[value] || value}
+      </span>
+    );
+  }
+
   return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-        {
-          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80": variant === "default",
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80": variant === "secondary",
-          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80": variant === "destructive",
-          "text-foreground": variant === "outline",
-        },
-        className
-      )}
-    >
+    <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold", className)}>
       {children}
     </span>
   );
+}
+
+export function getInitials(name: string) {
+  return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 }

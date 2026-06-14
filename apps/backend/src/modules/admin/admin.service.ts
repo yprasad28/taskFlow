@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../config/prisma";
+import { ApiError } from "../../utils/apiError";
 import {
   AdminStatsResponse,
   AdminUserResponse,
@@ -7,15 +8,18 @@ import {
   PaginatedUsersResponse,
   PaginatedAdminTasksResponse,
 } from "./admin.types";
-import { AdminUserQueryInput, AdminTaskQueryInput } from "./admin.schema";
+import { AdminUserQueryInput, AdminTaskQueryInput, AdminUpdateTaskInput } from "./admin.schema";
+import { logActivity } from "./activity-log.service";
 
 export async function getStats(): Promise<AdminStatsResponse> {
+  const now = new Date();
   const [
     totalUsers,
     totalTasks,
     pendingTasks,
     inProgressTasks,
     completedTasks,
+    overdueTasks,
     lowPriority,
     mediumPriority,
     highPriority,
@@ -26,6 +30,12 @@ export async function getStats(): Promise<AdminStatsResponse> {
     prisma.task.count({ where: { status: "PENDING" } }),
     prisma.task.count({ where: { status: "IN_PROGRESS" } }),
     prisma.task.count({ where: { status: "COMPLETED" } }),
+    prisma.task.count({
+      where: {
+        status: { not: "COMPLETED" },
+        dueDate: { lt: now },
+      },
+    }),
     prisma.task.count({ where: { priority: "LOW" } }),
     prisma.task.count({ where: { priority: "MEDIUM" } }),
     prisma.task.count({ where: { priority: "HIGH" } }),
@@ -38,6 +48,7 @@ export async function getStats(): Promise<AdminStatsResponse> {
     pendingTasks,
     inProgressTasks,
     completedTasks,
+    overdueTasks,
     tasksByPriority: {
       low: lowPriority,
       medium: mediumPriority,
@@ -73,6 +84,9 @@ export async function getUsers(
         role: true,
         createdAt: true,
         _count: { select: { tasks: true } },
+        tasks: {
+          select: { status: true },
+        },
       },
       orderBy: { createdAt: "desc" },
       skip,
@@ -84,14 +98,18 @@ export async function getUsers(
   const totalPages = Math.ceil(total / limit);
 
   return {
-    items: users.map((user) => ({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role as AdminUserResponse["role"],
-      createdAt: user.createdAt,
-      taskCount: user._count.tasks,
-    })),
+    items: users.map((user) => {
+      const completedTasks = user.tasks.filter((t) => t.status === "COMPLETED").length;
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role as AdminUserResponse["role"],
+        createdAt: user.createdAt,
+        taskCount: user._count.tasks,
+        completedTasks,
+      };
+    }),
     pagination: {
       page,
       limit,
@@ -160,4 +178,96 @@ export async function getTasks(
       hasPrev: page > 1,
     },
   };
+}
+
+export async function updateTask(
+  taskId: string,
+  data: AdminUpdateTaskInput,
+  adminId: string
+): Promise<AdminTaskResponse> {
+  const existingTask = await prisma.task.findUnique({
+    where: { id: taskId },
+    include: { user: { select: { id: true, name: true, email: true } } },
+  });
+
+  if (!existingTask) {
+    throw ApiError.notFound("Task not found");
+  }
+
+  const task = await prisma.task.update({
+    where: { id: taskId },
+    data: {
+      ...(data.title !== undefined && { title: data.title }),
+      ...(data.description !== undefined && { description: data.description }),
+      ...(data.status !== undefined && { status: data.status }),
+      ...(data.priority !== undefined && { priority: data.priority }),
+      ...(data.dueDate !== undefined && {
+        dueDate: data.dueDate ? new Date(data.dueDate) : null,
+      }),
+      ...(data.userId !== undefined && { userId: data.userId }),
+    },
+    include: {
+      user: { select: { id: true, name: true, email: true } },
+    },
+  });
+
+  const changes: string[] = [];
+  if (data.status && data.status !== existingTask.status) {
+    changes.push(`status from ${existingTask.status} to ${data.status}`);
+  }
+  if (data.priority && data.priority !== existingTask.priority) {
+    changes.push(`priority from ${existingTask.priority} to ${data.priority}`);
+  }
+  if (data.title && data.title !== existingTask.title) {
+    changes.push(`title to "${data.title}"`);
+  }
+  if (data.userId && data.userId !== existingTask.userId) {
+    changes.push(`assignee to ${task.user.name}`);
+  }
+
+  await logActivity({
+    action: "updated",
+    entity: "task",
+    entityId: taskId,
+    userId: adminId,
+    details: changes.length > 0
+      ? `Admin updated task "${existingTask.title}": ${changes.join(", ")}`
+      : `Admin updated task "${existingTask.title}"`,
+  });
+
+  return {
+    id: task.id,
+    title: task.title,
+    description: task.description,
+    status: task.status as AdminTaskResponse["status"],
+    priority: task.priority as AdminTaskResponse["priority"],
+    dueDate: task.dueDate,
+    createdAt: task.createdAt,
+    user: task.user,
+  };
+}
+
+export async function deleteTask(
+  taskId: string,
+  adminId: string
+): Promise<void> {
+  const existingTask = await prisma.task.findUnique({
+    where: { id: taskId },
+  });
+
+  if (!existingTask) {
+    throw ApiError.notFound("Task not found");
+  }
+
+  await prisma.task.delete({
+    where: { id: taskId },
+  });
+
+  await logActivity({
+    action: "deleted",
+    entity: "task",
+    entityId: taskId,
+    userId: adminId,
+    details: `Admin deleted task "${existingTask.title}"`,
+  });
 }

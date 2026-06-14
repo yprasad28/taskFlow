@@ -50,7 +50,7 @@ export default function AuthLayout({
             }}
           />
         </div>
-        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[#0058be]/20 rounded-full blur-3xl animate-pulse-soft" />
+        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[#2170e4]/20 rounded-full blur-3xl animate-pulse-soft" />
         <div className="absolute top-1/2 right-0 -translate-y-1/2 w-64 h-64 bg-[#2170e4]/10 rounded-full blur-2xl animate-pulse-soft delay-200" />
 
         <div className="z-10 mt-auto animate-slide-up delay-300" style={{ opacity: 0, animationFillMode: "forwards" }}>

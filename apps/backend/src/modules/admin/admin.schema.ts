@@ -19,10 +19,25 @@ export const adminTaskQuerySchema = z.object({
   userId: z.string().uuid().optional(),
   search: z.string().max(255).optional(),
   sortBy: z
-    .enum(["createdAt", "priority", "status", "title"])
+    .enum(["createdAt", "priority", "status", "title", "dueDate"])
     .default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
+export const adminTaskIdParamSchema = z.object({
+  id: z.string().uuid(),
+});
+
+export const adminUpdateTaskSchema = z.object({
+  title: z.string().min(1).max(255).optional(),
+  description: z.string().max(1000).optional(),
+  status: taskStatusEnum.optional(),
+  priority: taskPriorityEnum.optional(),
+  dueDate: z.string().optional().nullable(),
+  userId: z.string().uuid().optional(),
+});
+
 export type AdminUserQueryInput = z.infer<typeof adminUserQuerySchema>;
 export type AdminTaskQueryInput = z.infer<typeof adminTaskQuerySchema>;
+export type AdminTaskIdParam = z.infer<typeof adminTaskIdParamSchema>;
+export type AdminUpdateTaskInput = z.infer<typeof adminUpdateTaskSchema>;

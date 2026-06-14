@@ -45,7 +45,7 @@ export function RegisterForm() {
           className={cn(
             "flex-1 py-2.5 rounded-md text-sm font-semibold transition-all duration-200",
             selectedRole === "USER"
-              ? "bg-white text-[#0058be] shadow-sm scale-[1.02]"
+              ? "bg-white text-[#2170e4] shadow-sm scale-[1.02]"
               : "text-gray-500 hover:text-gray-900"
           )}
         >
@@ -57,7 +57,7 @@ export function RegisterForm() {
           className={cn(
             "flex-1 py-2.5 rounded-md text-sm font-semibold transition-all duration-200",
             selectedRole === "ADMIN"
-              ? "bg-white text-[#0058be] shadow-sm scale-[1.02]"
+              ? "bg-white text-[#2170e4] shadow-sm scale-[1.02]"
               : "text-gray-500 hover:text-gray-900"
           )}
         >
@@ -109,15 +109,15 @@ export function RegisterForm() {
           type="checkbox"
           checked={agreedToTerms}
           onChange={(e) => setAgreedToTerms(e.target.checked)}
-          className="mt-1 h-4 w-4 rounded border-gray-300 text-[#0058be] focus:ring-[#0058be]/20"
+          className="mt-1 h-4 w-4 rounded border-gray-300 text-[#2170e4] focus:ring-[#2170e4]/20"
         />
         <label htmlFor="terms" className="text-sm text-gray-500">
           By signing up, you agree to our{" "}
-          <a href="#" className="text-[#0058be] hover:underline">
+          <a href="#" className="text-[#2170e4] hover:underline">
             Terms of Service
           </a>{" "}
           and{" "}
-          <a href="#" className="text-[#0058be] hover:underline">
+          <a href="#" className="text-[#2170e4] hover:underline">
             Privacy Policy
           </a>
           .
@@ -138,7 +138,7 @@ export function RegisterForm() {
         Already have an account?{" "}
         <Link
           href="/login"
-          className="text-[#0058be] font-semibold hover:underline"
+          className="text-[#2170e4] font-semibold hover:underline"
         >
           Sign in
         </Link>
