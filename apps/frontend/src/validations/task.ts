@@ -12,6 +12,7 @@ export const createTaskSchema = z.object({
   status: z.enum(["PENDING", "IN_PROGRESS", "IN_REVIEW", "COMPLETED"]),
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]),
   dueDate: z.string().optional(),
+  userId: z.string().uuid().optional(),
 });
 
 export const updateTaskSchema = z.object({

@@ -17,6 +17,7 @@ export const createTaskSchema = z.object({
     .string()
     .optional()
     .nullable(),
+  userId: z.string().uuid().optional(),
 });
 
 export const updateTaskSchema = z.object({

@@ -12,6 +12,8 @@ export async function createTask(
   userId: string,
   data: CreateTaskInput
 ): Promise<TaskResponse> {
+  const assignedUserId = data.userId || userId;
+
   const task = await prisma.task.create({
     data: {
       title: data.title,
@@ -19,17 +21,21 @@ export async function createTask(
       status: data.status,
       priority: data.priority,
       dueDate: data.dueDate ? new Date(data.dueDate) : null,
-      userId,
+      userId: assignedUserId,
     },
   });
 
   const userName = await getUserName(userId);
+  const details = data.userId && data.userId !== userId
+    ? `${userName} created and assigned task "${task.title}" to user`
+    : `${userName} created task "${task.title}"`;
+
   await logActivity({
     action: "created",
     entity: "task",
     entityId: task.id,
     userId,
-    details: `${userName} created task "${task.title}"`,
+    details,
   });
 
   return formatTask(task);
