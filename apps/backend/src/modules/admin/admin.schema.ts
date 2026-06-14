@@ -1,7 +1,5 @@
 import { z } from "zod";
-
-const taskStatusEnum = z.enum(["PENDING", "IN_PROGRESS", "COMPLETED"]);
-const taskPriorityEnum = z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]);
+import { taskStatusEnum, taskPriorityEnum } from "../../utils/enums";
 const roleEnum = z.enum(["USER", "ADMIN"]);
 
 export const adminUserQuerySchema = z.object({

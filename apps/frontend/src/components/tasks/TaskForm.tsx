@@ -11,12 +11,14 @@ import { Select } from "@/components/ui/Select";
 interface TaskFormProps {
   task?: Task;
   onSubmit: (data: CreateTaskInput) => Promise<void>;
+  onCancel?: () => void;
   isLoading?: boolean;
 }
 
 const statusOptions = [
-  { value: "PENDING", label: "Pending" },
+  { value: "PENDING", label: "To Do" },
   { value: "IN_PROGRESS", label: "In Progress" },
+  { value: "IN_REVIEW", label: "In Review" },
   { value: "COMPLETED", label: "Completed" },
 ];
 
@@ -27,7 +29,7 @@ const priorityOptions = [
   { value: "URGENT", label: "Urgent" },
 ];
 
-export function TaskForm({ task, onSubmit, isLoading }: TaskFormProps) {
+export function TaskForm({ task, onSubmit, onCancel, isLoading }: TaskFormProps) {
   const {
     register,
     handleSubmit,
@@ -50,23 +52,22 @@ export function TaskForm({ task, onSubmit, isLoading }: TaskFormProps) {
       <Input
         id="title"
         label="Title"
-        placeholder="Task title"
+        placeholder="Enter task title"
         error={errors.title?.message}
         {...register("title")}
       />
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-foreground">
+      <div>
+        <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
           Description
         </label>
         <textarea
-          className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          placeholder="Task description (optional)"
+          id="description"
+          placeholder="Enter task description (optional)"
+          rows={3}
+          className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm placeholder:text-gray-400 focus:border-[#2170e4] focus:outline-none focus:ring-2 focus:ring-[#2170e4]/20 dark:border-white/10 dark:bg-[#0d1520] dark:text-white transition-all resize-none"
           {...register("description")}
         />
-        {errors.description && (
-          <p className="text-sm text-destructive">{errors.description.message}</p>
-        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -77,7 +78,6 @@ export function TaskForm({ task, onSubmit, isLoading }: TaskFormProps) {
           error={errors.status?.message}
           {...register("status")}
         />
-
         <Select
           id="priority"
           label="Priority"
@@ -95,7 +95,16 @@ export function TaskForm({ task, onSubmit, isLoading }: TaskFormProps) {
         {...register("dueDate")}
       />
 
-      <div className="flex justify-end gap-2">
+      <div className="flex justify-end gap-3 pt-4">
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-white/10 dark:bg-transparent dark:text-gray-300 dark:hover:bg-white/10 transition-colors"
+          >
+            Cancel
+          </button>
+        )}
         <Button type="submit" isLoading={isLoading}>
           {task ? "Update Task" : "Create Task"}
         </Button>

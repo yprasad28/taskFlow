@@ -61,7 +61,7 @@ export async function updateTask(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const task = await adminService.updateTask(
       id,
       req.body as AdminUpdateTaskInput,
@@ -82,7 +82,7 @@ export async function deleteTask(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     await adminService.deleteTask(id, req.user!.userId);
     res.status(200).json({
       success: true,

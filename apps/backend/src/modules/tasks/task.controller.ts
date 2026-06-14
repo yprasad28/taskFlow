@@ -93,3 +93,16 @@ export async function getTaskKPIs(req: Request, res: Response, next: NextFunctio
     next(error);
   }
 }
+
+export async function getUserActivity(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const limit = Number(req.query.limit) || 10;
+    const activities = await taskService.getUserActivityLogs(req.user!.userId, limit);
+    res.status(200).json({
+      success: true,
+      data: { activities },
+    });
+  } catch (error) {
+    next(error);
+  }
+}

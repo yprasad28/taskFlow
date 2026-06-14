@@ -26,9 +26,9 @@ export function useTaskFilters() {
       const params = new URLSearchParams(searchParams.toString());
 
       if (value === undefined || value === "" || value === null) {
-        params.delete(key);
+        params.delete(key as string);
       } else {
-        params.set(key, String(value));
+        params.set(key as string, String(value));
       }
 
       if (key !== "page") {
