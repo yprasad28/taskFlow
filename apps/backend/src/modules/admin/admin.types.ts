@@ -6,6 +6,7 @@ export interface AdminStatsResponse {
   pendingTasks: number;
   inProgressTasks: number;
   completedTasks: number;
+  overdueTasks: number;
   tasksByPriority: {
     low: number;
     medium: number;
@@ -21,6 +22,7 @@ export interface AdminUserResponse {
   role: Role;
   createdAt: Date;
   taskCount: number;
+  completedTasks: number;
 }
 
 export interface AdminTaskResponse {

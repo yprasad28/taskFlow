@@ -3,7 +3,12 @@ import { authenticate, authorize } from "../../middleware/auth";
 import { validate } from "../../middleware/validate";
 import { ROLES } from "../../types/roles";
 import * as adminController from "./admin.controller";
-import { adminUserQuerySchema, adminTaskQuerySchema } from "./admin.schema";
+import {
+  adminUserQuerySchema,
+  adminTaskQuerySchema,
+  adminTaskIdParamSchema,
+  adminUpdateTaskSchema,
+} from "./admin.schema";
 
 const router = Router();
 
@@ -23,5 +28,20 @@ router.get(
   validate(adminTaskQuerySchema, "query"),
   adminController.getTasks
 );
+
+router.patch(
+  "/tasks/:id",
+  validate(adminTaskIdParamSchema, "params"),
+  validate(adminUpdateTaskSchema),
+  adminController.updateTask
+);
+
+router.delete(
+  "/tasks/:id",
+  validate(adminTaskIdParamSchema, "params"),
+  adminController.deleteTask
+);
+
+router.get("/activity", adminController.getActivity);
 
 export default router;

@@ -55,7 +55,7 @@ export function LoginForm() {
             type="checkbox"
             checked={rememberMe}
             onChange={(e) => setRememberMe(e.target.checked)}
-            className="h-4 w-4 rounded border-gray-300 text-[#0058be] focus:ring-[#0058be]/20"
+            className="h-4 w-4 rounded border-gray-300 text-[#2170e4] focus:ring-[#2170e4]/20"
           />
           <label htmlFor="remember" className="text-sm text-gray-500">
             Remember me
@@ -63,7 +63,7 @@ export function LoginForm() {
         </div>
         <Link
           href="/forgot-password"
-          className="text-sm font-medium text-[#0058be] hover:underline"
+          className="text-sm font-medium text-[#2170e4] hover:underline"
         >
           Forgot password?
         </Link>
@@ -83,7 +83,7 @@ export function LoginForm() {
         Don&apos;t have an account?{" "}
         <Link
           href="/register"
-          className="text-[#0058be] font-semibold hover:underline"
+          className="text-[#2170e4] font-semibold hover:underline"
         >
           Sign up
         </Link>
