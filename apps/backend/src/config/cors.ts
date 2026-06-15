@@ -4,6 +4,7 @@ import { env } from "./env";
 const allowedOrigins = [
   env.FRONTEND_URL,
   "http://localhost:3000",
+  "https://task-flow-lcx3hj465-yprasad28s-projects.vercel.app",
 ].filter(Boolean);
 
 export const corsOptions: CorsOptions = {
