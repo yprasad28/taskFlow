@@ -10,6 +10,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "TaskFlow - Task Management",
   description: "A modern task management application",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
