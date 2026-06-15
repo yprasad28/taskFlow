@@ -315,7 +315,32 @@ npm test
 
 ## Deployment
 
-### Backend (Docker)
+### Docker Compose (Recommended)
+
+The fastest way to run the full application stack:
+
+```bash
+# Start all services (PostgreSQL + Backend + Frontend)
+docker compose up --build
+
+# Run in background
+docker compose up --build -d
+
+# Stop all services
+docker compose down
+
+# Stop and remove volumes (fresh start)
+docker compose down -v
+```
+
+This starts:
+- **PostgreSQL** on `localhost:5432`
+- **Backend** on `localhost:4000`
+- **Frontend** on `localhost:3000`
+
+### Docker (Individual Services)
+
+**Backend:**
 
 ```bash
 cd apps/backend
@@ -323,12 +348,30 @@ docker build -t taskflow-backend .
 docker run -p 4000:4000 --env-file .env taskflow-backend
 ```
 
-### Frontend
+**Frontend:**
 
 ```bash
 cd apps/frontend
-npm run build
-npm start
+docker build -t taskflow-frontend .
+docker run -p 3000:3000 -e NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1 taskflow-frontend
+```
+
+### Manual Setup (Without Docker)
+
+Requires PostgreSQL installed locally:
+
+```bash
+# Backend
+cd apps/backend
+npm install
+npx prisma migrate dev
+npm run db:seed
+npm run dev
+
+# Frontend (separate terminal)
+cd apps/frontend
+npm install
+npm run dev
 ```
 
 ### Environment
