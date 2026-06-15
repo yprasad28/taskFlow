@@ -138,32 +138,52 @@ TaskFlow/
 - PostgreSQL 14+
 - Git
 
-### Database Setup
+### Database Setup (Supabase PostgreSQL)
 
-1. Create a PostgreSQL database:
+This project uses **Supabase PostgreSQL** as the production database.
 
-```sql
-CREATE DATABASE taskflow;
+1. **Create a Supabase project** at https://supabase.com
+2. **Get your connection string** from Settings → Database → Connection String (URI):
+   - Copy the URI connection string
+   - Replace `[YOUR-PASSWORD]` with your database password
+3. **Update `apps/backend/.env`**:
+
+```env
+DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT-REF].supabase.co:5432/postgres?schema=public&sslmode=require"
 ```
 
-2. Update `apps/backend/.env` with your PostgreSQL connection string:
-
-```
-DATABASE_URL="postgresql://username:password@localhost:5432/taskflow?schema=public"
-```
-
-3. Run migrations:
+4. **Run migrations**:
 
 ```bash
 cd apps/backend
-npx prisma migrate dev
+npx prisma migrate deploy
 ```
 
-4. Seed the database with demo users and sample tasks:
+5. **Seed the database** with demo users and sample tasks:
 
 ```bash
 npm run db:seed
 ```
+
+This creates:
+
+| User | Email | Password | Role |
+|---|---|---|---|
+| Demo User | `demo@taskflow.com` | `password123` | USER |
+| Admin User | `admin@taskflow.com` | `password123` | ADMIN |
+
+### Local Development (Optional)
+
+If you prefer local PostgreSQL instead of Supabase:
+
+1. Install PostgreSQL 14+ locally
+2. Create database: `CREATE DATABASE taskflow;`
+3. Update `DATABASE_URL` in `.env`:
+   ```
+   DATABASE_URL="postgresql://username:password@localhost:5432/taskflow?schema=public"
+   ```
+4. Run migrations: `npx prisma migrate dev`
+5. Seed: `npm run db:seed`
 
 This creates:
 
@@ -315,68 +335,47 @@ npm test
 
 ## Deployment
 
-### Docker Compose (Recommended)
-
-The fastest way to run the full application stack:
-
-```bash
-# Start all services (PostgreSQL + Backend + Frontend)
-docker compose up --build
-
-# Run in background
-docker compose up --build -d
-
-# Stop all services
-docker compose down
-
-# Stop and remove volumes (fresh start)
-docker compose down -v
-```
-
-This starts:
-- **PostgreSQL** on `localhost:5432`
-- **Backend** on `localhost:4000`
-- **Frontend** on `localhost:3000`
-
-### Docker (Individual Services)
+### Manual Setup (Production)
 
 **Backend:**
 
 ```bash
 cd apps/backend
-docker build -t taskflow-backend .
-docker run -p 4000:4000 --env-file .env taskflow-backend
+npm install
+npx prisma migrate deploy
+npm run db:seed
+NODE_ENV=production npm run build
+NODE_ENV=production npm start
 ```
 
 **Frontend:**
 
 ```bash
 cd apps/frontend
-docker build -t taskflow-frontend .
-docker run -p 3000:3000 -e NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1 taskflow-frontend
+npm install
+npm run build
+npm start
 ```
 
-### Manual Setup (Without Docker)
+### Environment Variables (Production)
 
-Requires PostgreSQL installed locally:
+Set the following in your hosting platform:
 
-```bash
-# Backend
-cd apps/backend
-npm install
-npx prisma migrate dev
-npm run db:seed
-npm run dev
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | Supabase PostgreSQL connection string with `sslmode=require` |
+| `JWT_SECRET` | 32+ character secret for access tokens |
+| `JWT_REFRESH_SECRET` | 32+ character secret for refresh tokens |
+| `NODE_ENV` | `production` |
+| `FRONTEND_URL` | Your frontend domain (e.g., `https://your-app.vercel.app`) |
+| `PORT` | Backend port (default: 4000) |
+| `NEXT_PUBLIC_API_URL` | Backend API URL (e.g., `https://your-api.example.com/api/v1`) |
 
-# Frontend (separate terminal)
-cd apps/frontend
-npm install
-npm run dev
-```
+### Recommended Hosting
 
-### Environment
-
-Set `NODE_ENV=production` and configure appropriate `DATABASE_URL`, `JWT_SECRET`, `JWT_REFRESH_SECRET`, and `FRONTEND_URL` for your deployment.
+- **Frontend**: Vercel (auto-deploys from Git)
+- **Backend**: Render, Railway, or Fly.io (Node.js with PostgreSQL)
+- **Database**: Supabase PostgreSQL (already configured)
 
 ## License
 
