@@ -17,6 +17,8 @@ model User {
   updatedAt    DateTime @updatedAt
   tasks        Task[]
   activityLogs ActivityLog[]
+
+  @@map("users")
 }
 
 model Task {
@@ -35,6 +37,7 @@ model Task {
 
   @@index([userId])
   @@index([status])
+  @@map("tasks")
 }
 
 model ActivityLog {
@@ -52,4 +55,5 @@ model ActivityLog {
   @@index([userId])
   @@index([createdAt])
   @@index([entityId])
+  @@map("activity_logs")
 }
