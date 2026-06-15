@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import api from "@/lib/api";
 import { useTaskEvent } from "@/hooks/useTaskEvents";
 import { timeAgo, getInitials, ACTIVITY_STYLES } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface ActivityItem {
   id: string;
@@ -29,7 +30,9 @@ export function RecentActivity() {
     try {
       const { data } = await api.get("/tasks/activity?limit=8");
       setActivities(data.data.activities || []);
-    } catch {} finally {
+    } catch {
+      // Activity feed is non-critical, fail silently
+    } finally {
       setLoading(false);
     }
   }, []);

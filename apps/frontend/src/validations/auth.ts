@@ -24,7 +24,6 @@ export const registerSchema = z.object({
     .min(8, "Password must be at least 8 characters")
     .max(128, "Password must be less than 128 characters"),
   confirmPassword: z.string().min(1, "Please confirm your password"),
-  role: z.enum(["USER", "ADMIN"]),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],

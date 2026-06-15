@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { PRIORITY_COLORS, PRIORITY_LABELS } from "@/lib/constants";
 import api from "@/lib/api";
 import { Task } from "@/types/task";
+import { toast } from "sonner";
 
 export function TodaysTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -16,7 +17,9 @@ export function TodaysTasks() {
       try {
         const { data } = await api.get("/tasks?status=PENDING&sortBy=dueDate&sortOrder=asc&limit=5");
         setTasks(data.data.items || []);
-      } catch {} finally {
+      } catch {
+        toast.error("Failed to load tasks");
+      } finally {
         setLoading(false);
       }
     };
@@ -29,7 +32,9 @@ export function TodaysTasks() {
         status: task.status === "COMPLETED" ? "PENDING" : "COMPLETED",
       });
       setTasks((prev) => prev.filter((t) => t.id !== task.id));
-    } catch {}
+    } catch {
+      toast.error("Failed to update task");
+    }
   };
 
   const formatDate = (dateStr: string | null) => {

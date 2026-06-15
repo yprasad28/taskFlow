@@ -18,6 +18,7 @@ import { STATUS_COLORS, STATUS_LABELS, PRIORITY_LABELS } from "@/lib/constants";
 import { useTaskEvent } from "@/hooks/useTaskEvents";
 import api from "@/lib/api";
 import { Task } from "@/types/task";
+import { toast } from "sonner";
 
 const localizer = momentLocalizer(moment);
 
@@ -42,7 +43,9 @@ export default function UserCalendarPage() {
       setLoading(true);
       const { data } = await api.get("/tasks?limit=50&sortBy=dueDate&sortOrder=asc");
       setTasks(data.data.items || []);
-    } catch {} finally {
+    } catch {
+      toast.error("Failed to load calendar tasks");
+    } finally {
       setLoading(false);
     }
   }, []);

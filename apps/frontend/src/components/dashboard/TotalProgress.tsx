@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import { TaskKPIs } from "@/types/task";
+import { toast } from "sonner";
 
 interface RingSegment {
   label: string;
@@ -19,7 +20,9 @@ export function TotalProgress() {
       try {
         const { data } = await api.get("/tasks/kpis");
         setKpis(data.data.kpis);
-      } catch {}
+      } catch {
+        toast.error("Failed to load progress data");
+      }
     };
     fetchKPIs();
   }, []);

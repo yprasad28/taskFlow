@@ -8,6 +8,7 @@ import { dispatchTaskEvent } from "@/hooks/useTaskEvents";
 import { useUsers } from "@/hooks/useUsers";
 import { Modal } from "@/components/ui/Modal";
 import api from "@/lib/api";
+import { toast } from "sonner";
 
 interface EditTaskModalProps {
   isOpen: boolean;
@@ -54,7 +55,9 @@ export function EditTaskModal({ isOpen, onClose, task }: EditTaskModalProps) {
       });
       dispatchTaskEvent("task-updated");
       onClose();
-    } catch {} finally {
+    } catch {
+      toast.error("Failed to update task");
+    } finally {
       setSubmitting(false);
     }
   };
@@ -67,7 +70,9 @@ export function EditTaskModal({ isOpen, onClose, task }: EditTaskModalProps) {
       dispatchTaskEvent("task-updated");
       setShowDeleteModal(false);
       onClose();
-    } catch {} finally {
+    } catch {
+      toast.error("Failed to delete task");
+    } finally {
       setDeleting(false);
     }
   };

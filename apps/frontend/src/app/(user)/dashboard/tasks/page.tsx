@@ -20,6 +20,7 @@ import { Pagination } from "@/components/ui/Pagination";
 import { BoardView } from "@/components/tasks/BoardView";
 import { EditTaskModal } from "@/components/tasks/EditTaskModal";
 import { Task } from "@/types/task";
+import { toast } from "sonner";
 
 interface PaginationMeta {
   page: number;
@@ -63,7 +64,9 @@ export default function UserTasksPage() {
         const { data } = await api.get(`/tasks?${params.toString()}`);
         setTasks(data.data.items);
         setPagination(data.data.pagination);
-      } catch {} finally {
+      } catch {
+        toast.error("Failed to load tasks");
+      } finally {
         setLoading(false);
       }
     },
@@ -79,7 +82,9 @@ export default function UserTasksPage() {
         completed: kpis.completed || 0,
         pending: kpis.pending || 0,
       });
-    } catch {}
+    } catch {
+      toast.error("Failed to load task statistics");
+    }
   }, []);
 
   useEffect(() => {
