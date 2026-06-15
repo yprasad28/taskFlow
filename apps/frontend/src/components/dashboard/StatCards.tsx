@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CheckCircle, Clock } from "lucide-react";
 import api from "@/lib/api";
 import { TaskKPIs } from "@/types/task";
+import { toast } from "sonner";
 
 export function StatCards() {
   const [kpis, setKpis] = useState<TaskKPIs | null>(null);
@@ -13,7 +14,9 @@ export function StatCards() {
       try {
         const { data } = await api.get("/tasks/kpis");
         setKpis(data.data.kpis);
-      } catch {}
+      } catch {
+        toast.error("Failed to load task statistics");
+      }
     };
     fetchKPIs();
   }, []);

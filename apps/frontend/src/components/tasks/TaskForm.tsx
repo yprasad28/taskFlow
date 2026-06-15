@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Trash2 } from "lucide-react";
 import { createTaskSchema, CreateTaskInput } from "@/validations/task";
 import { Task } from "@/types/task";
 import { Button } from "@/components/ui/Button";
@@ -12,6 +13,7 @@ interface TaskFormProps {
   task?: Task;
   onSubmit: (data: CreateTaskInput) => Promise<void>;
   onCancel?: () => void;
+  onDelete?: () => void;
   isLoading?: boolean;
 }
 
@@ -29,7 +31,7 @@ const priorityOptions = [
   { value: "URGENT", label: "Urgent" },
 ];
 
-export function TaskForm({ task, onSubmit, onCancel, isLoading }: TaskFormProps) {
+export function TaskForm({ task, onSubmit, onCancel, onDelete, isLoading }: TaskFormProps) {
   const {
     register,
     handleSubmit,
@@ -95,19 +97,33 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading }: TaskFormProps)
         {...register("dueDate")}
       />
 
-      <div className="flex justify-end gap-3 pt-4">
-        {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-white/10 dark:bg-transparent dark:text-gray-300 dark:hover:bg-white/10 transition-colors"
-          >
-            Cancel
-          </button>
-        )}
-        <Button type="submit" isLoading={isLoading}>
-          {task ? "Update Task" : "Create Task"}
-        </Button>
+      <div className="flex justify-between gap-3 pt-4">
+        <div>
+          {onDelete && task && (
+            <button
+              type="button"
+              onClick={onDelete}
+              className="flex items-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-500/20 dark:bg-transparent dark:text-red-400 dark:hover:bg-red-500/10 transition-colors"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </button>
+          )}
+        </div>
+        <div className="flex gap-3">
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-white/10 dark:bg-transparent dark:text-gray-300 dark:hover:bg-white/10 transition-colors"
+            >
+              Cancel
+            </button>
+          )}
+          <Button type="submit" isLoading={isLoading}>
+            {task ? "Update Task" : "Create Task"}
+          </Button>
+        </div>
       </div>
     </form>
   );

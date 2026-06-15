@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import api from "@/lib/api";
+import { toast } from "sonner";
 
 export function QuickCreate() {
   const [title, setTitle] = useState("");
@@ -27,7 +28,9 @@ export function QuickCreate() {
       setDueDate("");
       setSuccess(true);
       setTimeout(() => setSuccess(false), 2000);
-    } catch {} finally {
+    } catch {
+      toast.error("Failed to create task");
+    } finally {
       setSubmitting(false);
     }
   };

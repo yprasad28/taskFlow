@@ -7,6 +7,7 @@ import { dispatchTaskEvent } from "@/hooks/useTaskEvents";
 import { useUsers } from "@/hooks/useUsers";
 import { Modal } from "@/components/ui/Modal";
 import api from "@/lib/api";
+import { toast } from "sonner";
 
 interface CreateTaskModalProps {
   isOpen: boolean;
@@ -43,7 +44,9 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
       setPriority("MEDIUM");
       dispatchTaskEvent("task-created");
       onClose();
-    } catch {} finally {
+    } catch {
+      toast.error("Failed to create task");
+    } finally {
       setSubmitting(false);
     }
   };
