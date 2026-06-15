@@ -1,9 +1,14 @@
 import { CorsOptions } from "cors";
 import { env } from "./env";
 
+const allowedOrigins = [
+  env.FRONTEND_URL,
+  "http://localhost:3000",
+].filter(Boolean);
+
 export const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
-    if (!origin || origin === env.FRONTEND_URL) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
