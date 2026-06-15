@@ -1,41 +1,52 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function MiniCalendar() {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const today = new Date();
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
+  const [todayStr, setTodayStr] = useState<string>("");
 
-  const calendarDays = useMemo(() => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const daysInPrevMonth = new Date(year, month, 0).getDate();
+  useEffect(() => {
+    const now = new Date();
+    setCurrentDate(now);
+    setTodayStr(`${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`);
+  }, []);
 
-    const days: { day: number; isCurrentMonth: boolean; isToday: boolean }[] = [];
+  if (!currentDate) {
+    return (
+      <div className="bg-white dark:bg-[#111827] rounded-xl border border-gray-200 dark:border-white/10 p-4">
+        <div className="h-[280px] animate-pulse bg-gray-100 dark:bg-white/5 rounded-lg" />
+      </div>
+    );
+  }
 
-    for (let i = firstDay - 1; i >= 0; i--) {
-      days.push({ day: daysInPrevMonth - i, isCurrentMonth: false, isToday: false });
-    }
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
 
-    for (let d = 1; d <= daysInMonth; d++) {
-      days.push({
-        day: d,
-        isCurrentMonth: true,
-        isToday: d === today.getDate() && month === today.getMonth() && year === today.getFullYear(),
-      });
-    }
+  const days: { day: number; isCurrentMonth: boolean; isToday: boolean }[] = [];
 
-    const remaining = 42 - days.length;
-    for (let d = 1; d <= remaining; d++) {
-      days.push({ day: d, isCurrentMonth: false, isToday: false });
-    }
+  for (let i = firstDay - 1; i >= 0; i--) {
+    days.push({ day: daysInPrevMonth - i, isCurrentMonth: false, isToday: false });
+  }
 
-    return days;
-  }, [currentDate]);
+  for (let d = 1; d <= daysInMonth; d++) {
+    const key = `${year}-${month}-${d}`;
+    days.push({
+      day: d,
+      isCurrentMonth: true,
+      isToday: key === todayStr,
+    });
+  }
+
+  const remaining = 42 - days.length;
+  for (let d = 1; d <= remaining; d++) {
+    days.push({ day: d, isCurrentMonth: false, isToday: false });
+  }
 
   const monthName = currentDate.toLocaleString("en-US", { month: "long", year: "numeric" });
 
@@ -72,7 +83,7 @@ export function MiniCalendar() {
             {d}
           </div>
         ))}
-        {calendarDays.map((day, idx) => (
+        {days.map((day, idx) => (
           <button
             key={idx}
             className={cn(

@@ -54,21 +54,30 @@ export default function AuthLayout({
         <div className="absolute top-1/2 right-0 -translate-y-1/2 w-64 h-64 bg-[#2170e4]/10 rounded-full blur-2xl animate-pulse-soft delay-200" />
 
         <div className="z-10 mt-auto animate-slide-up delay-300" style={{ opacity: 0, animationFillMode: "forwards" }}>
-          <div className="flex items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm">
-            <div className="flex -space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#2170e4] text-xs font-bold border-2 border-[#0b1c30] animate-float">
-                JS
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white">Demo Credentials</h3>
+            <div className="space-y-3">
+              <div className="p-4 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-medium text-[#dae2fd] uppercase tracking-wider">Admin</span>
+                  <span className="px-2 py-0.5 bg-[#2170e4] text-xs font-semibold rounded">ADMIN</span>
+                </div>
+                <div className="space-y-1 text-sm text-[#7c839b] font-mono">
+                  <div>admin@taskflow.com</div>
+                  <div>password123</div>
+                </div>
               </div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#bec6e0] text-xs font-bold border-2 border-[#0b1c30] animate-float delay-100">
-                AK
-              </div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#2170e4] text-xs font-bold border-2 border-[#0b1c30] animate-float delay-200">
-                +10k
+              <div className="p-4 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-medium text-[#dae2fd] uppercase tracking-wider">User</span>
+                  <span className="px-2 py-0.5 bg-gray-500 text-xs font-semibold rounded">USER</span>
+                </div>
+                <div className="space-y-1 text-sm text-[#7c839b] font-mono">
+                  <div>demo@taskflow.com</div>
+                  <div>password123</div>
+                </div>
               </div>
             </div>
-            <p className="text-sm font-semibold text-[#dae2fd]">
-              Join the world&apos;s most innovative product teams.
-            </p>
           </div>
         </div>
       </section>

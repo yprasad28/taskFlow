@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, RegisterInput } from "@/validations/auth";
@@ -11,7 +10,6 @@ import Link from "next/link";
 
 export function RegisterForm() {
   const { register: registerUser } = useAuth();
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const {
     register,
@@ -63,27 +61,6 @@ export function RegisterForm() {
           error={errors.confirmPassword?.message}
           {...register("confirmPassword")}
         />
-      </div>
-
-      <div className="animate-slide-up delay-200 flex items-start gap-3 py-2" style={{ opacity: 0, animationFillMode: "forwards" }}>
-        <input
-          id="terms"
-          type="checkbox"
-          checked={agreedToTerms}
-          onChange={(e) => setAgreedToTerms(e.target.checked)}
-          className="mt-1 h-4 w-4 rounded border-gray-300 text-[#2170e4] focus:ring-[#2170e4]/20"
-        />
-        <label htmlFor="terms" className="text-sm text-gray-500">
-          By signing up, you agree to our{" "}
-          <a href="#" className="text-[#2170e4] hover:underline">
-            Terms of Service
-          </a>{" "}
-          and{" "}
-          <a href="#" className="text-[#2170e4] hover:underline">
-            Privacy Policy
-          </a>
-          .
-        </label>
       </div>
 
       <div className="animate-slide-up delay-250" style={{ opacity: 0, animationFillMode: "forwards" }}>
