@@ -185,7 +185,7 @@ export default function UserTasksPage() {
             valueColor: "text-green-600",
           },
           {
-            label: "Pending",
+            label: "To Do",
             value: taskStats.pending,
             icon: AlertTriangle,
             iconBg: "bg-amber-50 dark:bg-amber-500/10",

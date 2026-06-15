@@ -118,7 +118,7 @@ export function EditTaskModal({ isOpen, onClose, task }: EditTaskModalProps) {
                 onChange={(e) => setStatus(e.target.value as "PENDING" | "IN_PROGRESS" | "IN_REVIEW" | "COMPLETED")}
                 className="h-11 w-full rounded-lg border border-gray-200 bg-white px-4 text-sm text-gray-700 focus:border-[#2170e4] focus:outline-none focus:ring-2 focus:ring-[#2170e4]/20 dark:border-white/10 dark:bg-[#0d1520] dark:text-white transition-all appearance-none"
               >
-                <option value="PENDING">Pending</option>
+                <option value="PENDING">To Do</option>
                 <option value="IN_PROGRESS">In Progress</option>
                 <option value="IN_REVIEW">In Review</option>
                 <option value="COMPLETED">Completed</option>
