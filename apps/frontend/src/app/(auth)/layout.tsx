@@ -54,30 +54,42 @@ export default function AuthLayout({
         <div className="absolute top-1/2 right-0 -translate-y-1/2 w-64 h-64 bg-[#2170e4]/10 rounded-full blur-2xl animate-pulse-soft delay-200" />
 
         <div className="z-10 mt-auto animate-slide-up delay-300" style={{ opacity: 0, animationFillMode: "forwards" }}>
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Demo Credentials</h3>
-            <div className="space-y-3">
-              <div className="p-4 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-medium text-[#dae2fd] uppercase tracking-wider">Admin</span>
-                  <span className="px-2 py-0.5 bg-[#2170e4] text-xs font-semibold rounded">ADMIN</span>
-                </div>
-                <div className="space-y-1 text-sm text-[#7c839b] font-mono">
-                  <div>admin@taskflow.com</div>
-                  <div>password123</div>
-                </div>
-              </div>
-              <div className="p-4 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-medium text-[#dae2fd] uppercase tracking-wider">User</span>
-                  <span className="px-2 py-0.5 bg-gray-500 text-xs font-semibold rounded">USER</span>
-                </div>
-                <div className="space-y-1 text-sm text-[#7c839b] font-mono">
-                  <div>demo@taskflow.com</div>
-                  <div>password123</div>
-                </div>
-              </div>
-            </div>
+          <div className="bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm p-6">
+            <svg viewBox="0 0 400 220" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+              <rect x="20" y="20" width="110" height="180" rx="12" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+              <text x="75" y="48" textAnchor="middle" fill="#7c839b" fontSize="11" fontWeight="600">TO DO</text>
+              <rect x="32" y="60" width="86" height="36" rx="8" fill="rgba(33,112,228,0.15)" stroke="rgba(33,112,228,0.3)" strokeWidth="1"/>
+              <rect x="42" y="70" width="50" height="6" rx="3" fill="rgba(255,255,255,0.3)"/>
+              <rect x="42" y="82" width="30" height="4" rx="2" fill="rgba(255,255,255,0.15)"/>
+              <rect x="32" y="104" width="86" height="36" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" strokeWidth="1"/>
+              <rect x="42" y="114" width="60" height="6" rx="3" fill="rgba(255,255,255,0.2)"/>
+              <rect x="42" y="126" width="40" height="4" rx="2" fill="rgba(255,255,255,0.1)"/>
+              <rect x="32" y="148" width="86" height="36" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" strokeWidth="1"/>
+              <rect x="42" y="158" width="45" height="6" rx="3" fill="rgba(255,255,255,0.2)"/>
+              <rect x="42" y="170" width="55" height="4" rx="2" fill="rgba(255,255,255,0.1)"/>
+
+              <rect x="145" y="20" width="110" height="180" rx="12" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+              <text x="200" y="48" textAnchor="middle" fill="#7c839b" fontSize="11" fontWeight="600">IN PROGRESS</text>
+              <rect x="157" y="60" width="86" height="36" rx="8" fill="rgba(249,115,22,0.15)" stroke="rgba(249,115,22,0.3)" strokeWidth="1"/>
+              <rect x="167" y="70" width="55" height="6" rx="3" fill="rgba(255,255,255,0.3)"/>
+              <rect x="167" y="82" width="35" height="4" rx="2" fill="rgba(255,255,255,0.15)"/>
+              <rect x="157" y="104" width="86" height="36" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" strokeWidth="1"/>
+              <rect x="167" y="114" width="48" height="6" rx="3" fill="rgba(255,255,255,0.2)"/>
+              <rect x="167" y="126" width="60" height="4" rx="2" fill="rgba(255,255,255,0.1)"/>
+
+              <rect x="270" y="20" width="110" height="180" rx="12" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+              <text x="325" y="48" textAnchor="middle" fill="#7c839b" fontSize="11" fontWeight="600">DONE</text>
+              <rect x="282" y="60" width="86" height="36" rx="8" fill="rgba(34,197,94,0.15)" stroke="rgba(34,197,94,0.3)" strokeWidth="1"/>
+              <rect x="292" y="70" width="40" height="6" rx="3" fill="rgba(255,255,255,0.3)"/>
+              <rect x="292" y="82" width="50" height="4" rx="2" fill="rgba(255,255,255,0.15)"/>
+              <circle cx="350" cy="78" r="8" fill="rgba(34,197,94,0.3)"/>
+              <path d="M347 78l2 2 4-4" stroke="rgba(34,197,94,0.8)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <rect x="282" y="104" width="86" height="36" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" strokeWidth="1"/>
+              <rect x="292" y="114" width="55" height="6" rx="3" fill="rgba(255,255,255,0.2)"/>
+              <rect x="292" y="126" width="35" height="4" rx="2" fill="rgba(255,255,255,0.1)"/>
+              <circle cx="350" cy="122" r="8" fill="rgba(34,197,94,0.3)"/>
+              <path d="M347 122l2 2 4-4" stroke="rgba(34,197,94,0.8)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </div>
         </div>
       </section>

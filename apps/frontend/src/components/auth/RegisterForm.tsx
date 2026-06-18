@@ -43,7 +43,7 @@ export function RegisterForm() {
             className={cn(
               "flex-1 rounded-md py-2.5 text-sm font-medium transition-all duration-200",
               selectedRole === "USER"
-                ? "bg-white dark:bg-[#111827] text-gray-900 dark:text-white shadow-sm"
+                ? "bg-[#2170e4] text-white shadow-sm"
                 : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             )}
           >
@@ -59,7 +59,7 @@ export function RegisterForm() {
             className={cn(
               "flex-1 rounded-md py-2.5 text-sm font-medium transition-all duration-200",
               selectedRole === "ADMIN"
-                ? "bg-white dark:bg-[#111827] text-gray-900 dark:text-white shadow-sm"
+                ? "bg-[#2170e4] text-white shadow-sm"
                 : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             )}
           >
@@ -121,7 +121,7 @@ export function RegisterForm() {
           className="w-full h-12 bg-[#0b1c30] hover:bg-[#131b2e] text-white font-semibold text-base rounded-lg shadow-lg shadow-[#0b1c30]/20 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           isLoading={isSubmitting}
         >
-          Get Started
+          Get Started as {selectedRole === "ADMIN" ? "Admin" : "User"}
         </Button>
       </div>
 

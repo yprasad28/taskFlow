@@ -67,10 +67,15 @@ export function useAuth() {
     return role === "ADMIN" ? "/admin/dashboard" : "/dashboard";
   };
 
-  const login = async (input: LoginInput) => {
+  const login = async (input: LoginInput, expectedRole?: Role) => {
     try {
       const { data } = await api.post<ApiResponse<AuthData>>("/auth/login", input);
       const { user, token, refreshToken } = data.data;
+
+      if (expectedRole && user.role !== expectedRole) {
+        toast.error(`This account is not registered as ${expectedRole === "ADMIN" ? "an Admin" : "a User"}. Please select the correct role.`);
+        throw new Error("Role mismatch");
+      }
 
       localStorage.setItem("accessToken", token);
       document.cookie = `refreshToken=${refreshToken}; path=/; max-age=${7 * 24 * 60 * 60}`;
@@ -81,6 +86,7 @@ export function useAuth() {
       toast.success("Welcome back!");
       router.push(getRedirectPath(user.role));
     } catch (error: unknown) {
+      if ((error as Error).message === "Role mismatch") throw error;
       const apiError = error as { response?: { data?: { error?: { message?: string } } } };
       const message = apiError.response?.data?.error?.message || "Login failed";
       toast.error(message);
