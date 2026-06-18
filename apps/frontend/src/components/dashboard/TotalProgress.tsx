@@ -24,7 +24,8 @@ export function TotalProgress() {
         toast.error("Failed to load progress data");
       }
     };
-    fetchKPIs();
+    const timer = setTimeout(fetchKPIs, 800);
+    return () => clearTimeout(timer);
   }, []);
 
   const total = kpis?.total || 0;

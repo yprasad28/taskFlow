@@ -23,7 +23,8 @@ export function TodaysTasks() {
         setLoading(false);
       }
     };
-    fetchTasks();
+    const timer = setTimeout(fetchTasks, 400);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleToggle = async (task: Task) => {

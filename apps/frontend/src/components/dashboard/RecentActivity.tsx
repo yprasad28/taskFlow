@@ -38,7 +38,8 @@ export function RecentActivity() {
   }, []);
 
   useEffect(() => {
-    fetchActivities();
+    const timer = setTimeout(fetchActivities, 600);
+    return () => clearTimeout(timer);
   }, [fetchActivities]);
 
   useTaskEvent("task-created", fetchActivities);

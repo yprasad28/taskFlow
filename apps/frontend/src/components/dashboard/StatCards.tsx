@@ -18,7 +18,8 @@ export function StatCards() {
         toast.error("Failed to load task statistics");
       }
     };
-    fetchKPIs();
+    const timer = setTimeout(fetchKPIs, 200);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
