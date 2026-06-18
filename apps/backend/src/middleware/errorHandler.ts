@@ -88,6 +88,18 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
     return;
   }
 
+  if (err.message?.includes("Connection pool timeout") || err.message?.includes("Timed out")) {
+    console.error("Connection pool timeout:", err.message);
+    res.status(503).json({
+      success: false,
+      error: {
+        code: "SERVICE_UNAVAILABLE",
+        message: "Server is temporarily busy, please try again",
+      },
+    });
+    return;
+  }
+
   if (err.name === "JsonWebTokenError") {
     res.status(401).json({
       success: false,

@@ -15,28 +15,42 @@ export function useAuth() {
   const router = useRouter();
   const hasCheckedAuth = useRef(false);
 
-  const fetchUser = useCallback(async () => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      if (!token) {
+  const fetchUser = useCallback(async (retries = 2) => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        setAccessToken(token);
+        const { data } = await api.get("/auth/me");
+        setUser(data.data.user);
+        hasCheckedAuth.current = true;
         setIsLoading(false);
         return;
-      }
-
-      setAccessToken(token);
-      const { data } = await api.get("/auth/me");
-      setUser(data.data.user);
-      hasCheckedAuth.current = true;
-    } catch (error: unknown) {
-      const statusCode = (error as { response?: { status?: number } })?.response?.status;
-      if (statusCode === 401) {
+      } catch (error: unknown) {
+        const statusCode = (error as { response?: { status?: number } })?.response?.status;
+        if (statusCode === 401) {
+          localStorage.removeItem("accessToken");
+          setAccessToken(null);
+          setUser(null);
+          setIsLoading(false);
+          return;
+        }
+        if (statusCode === 500 && attempt < retries) {
+          await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+          continue;
+        }
         localStorage.removeItem("accessToken");
         setAccessToken(null);
         setUser(null);
+        setIsLoading(false);
+        return;
       }
-    } finally {
-      setIsLoading(false);
     }
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
