@@ -7,6 +7,7 @@ const allowedOrigins = [
   "https://task-flow-lcx3hj465-yprasad28s-projects.vercel.app",
   "https://frontend-h6h7a0aju-yprasad28s-projects.vercel.app",
   "https://frontend-alpha-liard-54.vercel.app",
+  "https://frontend-pv8rfsgqo-yprasad28s-projects.vercel.app",
 ].filter(Boolean);
 
 export const corsOptions: CorsOptions = {

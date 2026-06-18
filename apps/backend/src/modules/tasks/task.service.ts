@@ -55,23 +55,21 @@ export async function getTasks(
     ...(search && {
       title: {
         contains: search,
+        mode: "insensitive",
       },
     }),
   };
 
-  const orderBy: Prisma.TaskOrderByWithRelationInput = {
-    [sortBy]: sortOrder,
-  };
+  const orderBy: Record<string, "asc" | "desc"> = { [sortBy]: sortOrder };
 
-  const [tasks, total] = await Promise.all([
-    prisma.task.findMany({
-      where,
-      orderBy,
-      skip,
-      take: limit,
-    }),
-    prisma.task.count({ where }),
-  ]);
+  const total = await prisma.task.count({ where });
+
+  const tasks = await prisma.task.findMany({
+    where,
+    orderBy,
+    skip,
+    take: limit,
+  });
 
   return {
     items: tasks.map(formatTask),
