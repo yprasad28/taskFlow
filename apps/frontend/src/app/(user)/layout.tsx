@@ -13,7 +13,7 @@ export default function UserLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, isLoading, isAdmin, user } = useAuth();
+  const { isAuthenticated, isLoading, isAdmin, user, authError, retryAuth } = useAuth();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -30,14 +30,14 @@ export default function UserLayout({
   }, []);
 
   useEffect(() => {
-    if (mounted && !isLoading) {
+    if (mounted && !isLoading && !authError) {
       if (!isAuthenticated) {
         router.replace("/login");
       } else if (isAdmin) {
         router.replace("/admin/dashboard");
       }
     }
-  }, [mounted, isLoading, isAuthenticated, isAdmin, router]);
+  }, [mounted, isLoading, isAuthenticated, isAdmin, authError, router]);
 
   if (!mounted || isLoading) {
     return (
@@ -69,6 +69,43 @@ export default function UserLayout({
               <Skeleton className="h-28" />
             </div>
           </main>
+        </div>
+      </div>
+    );
+  }
+
+  if (authError) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-[#0a0f1a]">
+        <div className="text-center p-8 max-w-md">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+            <svg className="w-8 h-8 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            Server Unavailable
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm">
+            {authError}
+          </p>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={retryAuth}
+              className="px-6 py-2.5 bg-[#2170e4] text-white rounded-lg font-medium hover:bg-[#1a5bc4] transition-colors"
+            >
+              Try Again
+            </button>
+            <button
+              onClick={() => {
+                localStorage.removeItem("accessToken");
+                router.replace("/login");
+              }}
+              className="px-6 py-2.5 bg-gray-200 dark:bg-white/10 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-white/20 transition-colors"
+            >
+              Go to Login
+            </button>
+          </div>
         </div>
       </div>
     );

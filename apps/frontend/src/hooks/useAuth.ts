@@ -12,6 +12,7 @@ import { toast } from "sonner";
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
   const router = useRouter();
   const hasCheckedAuth = useRef(false);
 
@@ -27,6 +28,7 @@ export function useAuth() {
         setAccessToken(token);
         const { data } = await api.get("/auth/me");
         setUser(data.data.user);
+        setAuthError(null);
         hasCheckedAuth.current = true;
         setIsLoading(false);
         return;
@@ -36,6 +38,7 @@ export function useAuth() {
           localStorage.removeItem("accessToken");
           setAccessToken(null);
           setUser(null);
+          setAuthError(null);
           setIsLoading(false);
           return;
         }
@@ -43,9 +46,12 @@ export function useAuth() {
           await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
           continue;
         }
-        localStorage.removeItem("accessToken");
-        setAccessToken(null);
-        setUser(null);
+        if (statusCode === 500) {
+          setAuthError("Server is temporarily unavailable. Please try again.");
+          setIsLoading(false);
+          return;
+        }
+        setAuthError("Unable to connect to server.");
         setIsLoading(false);
         return;
       }
@@ -70,6 +76,7 @@ export function useAuth() {
       document.cookie = `refreshToken=${refreshToken}; path=/; max-age=${7 * 24 * 60 * 60}`;
       setAccessToken(token);
       setUser(user);
+      setAuthError(null);
 
       toast.success("Welcome back!");
       router.push(getRedirectPath(user.role));
@@ -90,6 +97,7 @@ export function useAuth() {
       document.cookie = `refreshToken=${refreshToken}; path=/; max-age=${7 * 24 * 60 * 60}`;
       setAccessToken(token);
       setUser(user);
+      setAuthError(null);
 
       toast.success("Account created successfully!");
       router.push(getRedirectPath(user.role));
@@ -106,16 +114,23 @@ export function useAuth() {
     document.cookie = "refreshToken=; path=/; max-age=0";
     setAccessToken(null);
     setUser(null);
+    setAuthError(null);
     router.push("/login");
   };
 
   return {
     user,
     isLoading,
+    authError,
     isAuthenticated: !!user,
     isAdmin: user?.role === "ADMIN",
     login,
     register,
     logout,
+    retryAuth: () => {
+      setIsLoading(true);
+      setAuthError(null);
+      fetchUser();
+    },
   };
 }
