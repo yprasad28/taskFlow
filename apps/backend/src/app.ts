@@ -3,6 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
 import { corsOptions } from "./config/cors";
+import { prisma } from "./config/prisma";
 import { rateLimiter } from "./middleware/rateLimiter";
 import { errorHandler } from "./middleware/errorHandler";
 import authRoutes from "./modules/auth/auth.routes";
@@ -17,7 +18,8 @@ app.use(rateLimiter);
 app.use(express.json());
 app.use(morgan("dev"));
 
-app.get("/health", (_req, res) => {
+app.get("/health", async (_req, res) => {
+  await prisma.$queryRaw`SELECT 1`;
   res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
