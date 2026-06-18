@@ -26,7 +26,7 @@ export async function register(data: RegisterInput): Promise<AuthResponse> {
       name: data.name,
       email: data.email,
       passwordHash,
-      role: "USER",
+      role: data.role || "USER",
     },
   });
 
