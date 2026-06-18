@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { ApiError } from "../utils/apiError";
-import { env } from "../config/env";
 
 export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction): void {
-  console.error("Error:", err);
+  console.error("Error:", err.name, err.message);
 
   if (err instanceof ApiError) {
     res.status(err.statusCode).json({
@@ -18,7 +17,7 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
   }
 
   if (err.name === "PrismaClientKnownRequestError") {
-    const prismaErr = err as unknown as { code: string; meta?: { target?: string[] } };
+    const prismaErr = err as unknown as { code: string; meta?: { target?: string[]; constraint?: string } };
 
     if (prismaErr.code === "P2002") {
       const field = prismaErr.meta?.target?.[0] || "field";
@@ -42,6 +41,51 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
       });
       return;
     }
+
+    if (prismaErr.code === "P2003") {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: "BAD_REQUEST",
+          message: `Foreign key constraint failed: ${prismaErr.meta?.constraint || "unknown"}`,
+        },
+      });
+      return;
+    }
+
+    res.status(500).json({
+      success: false,
+      error: {
+        code: "DATABASE_ERROR",
+        message: `Database error: ${prismaErr.code}`,
+      },
+    });
+    return;
+  }
+
+  if (err.name === "PrismaClientUnknownRequestError") {
+    const prismaErr = err as unknown as { message?: string };
+    console.error("PrismaClientUnknownRequestError:", prismaErr.message);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: "DATABASE_ERROR",
+        message: "Database query failed",
+      },
+    });
+    return;
+  }
+
+  if (err.name === "PrismaClientRustPanicError") {
+    console.error("PrismaClientRustPanicError:", err.message);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: "DATABASE_ERROR",
+        message: "Database engine error",
+      },
+    });
+    return;
   }
 
   if (err.name === "JsonWebTokenError") {
@@ -66,11 +110,16 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
     return;
   }
 
+  console.error("Unhandled error:", {
+    name: err.name,
+    message: err.message,
+  });
+
   res.status(500).json({
     success: false,
     error: {
       code: "INTERNAL_ERROR",
-      message: env.NODE_ENV === "development" ? err.message : "Internal server error",
+      message: "Internal server error",
     },
   });
 }
