@@ -179,15 +179,26 @@ export async function deleteTask(
 }
 
 export async function getTaskKPIs(userId: string): Promise<TaskKPIsResponse> {
-  const [total, pending, inProgress, inReview, completed] = await Promise.all([
-    prisma.task.count({ where: { userId } }),
-    prisma.task.count({ where: { userId, status: "PENDING" } }),
-    prisma.task.count({ where: { userId, status: "IN_PROGRESS" } }),
-    prisma.task.count({ where: { userId, status: "IN_REVIEW" } }),
-    prisma.task.count({ where: { userId, status: "COMPLETED" } }),
-  ]);
+  const total = await prisma.task.count({ where: { userId } });
 
-  return { total, pending, inProgress, inReview, completed };
+  const statusCounts = await prisma.task.groupBy({
+    by: ["status"],
+    where: { userId },
+    _count: { status: true },
+  });
+
+  const counts: Record<string, number> = {};
+  for (const row of statusCounts) {
+    counts[row.status] = row._count.status;
+  }
+
+  return {
+    total,
+    pending: counts["PENDING"] || 0,
+    inProgress: counts["IN_PROGRESS"] || 0,
+    inReview: counts["IN_REVIEW"] || 0,
+    completed: counts["COMPLETED"] || 0,
+  };
 }
 
 function formatTask(task: {
