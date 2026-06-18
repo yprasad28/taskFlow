@@ -146,7 +146,7 @@ export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {
                   "h-10 rounded-lg border text-sm font-medium transition-all",
                   priority === p
                     ? "border-[#2170e4] bg-[#2170e4]/10 text-[#2170e4] ring-2 ring-[#2170e4]/20"
-                    : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+                    : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:border-white/20 dark:hover:bg-white/10"
                 )}
               >
                 {p === "LOW" ? "Low" : p === "MEDIUM" ? "Medium" : "High"}
